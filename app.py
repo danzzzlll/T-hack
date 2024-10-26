@@ -91,7 +91,8 @@ def main():
         tts = Text2Speech(response)
         tts.get_part()
         tts.combine()
-        st.rerun()  
+        tts.post_processing('audios/dialogue.wav')
+        st.rerun()
 
     if user_query := st.chat_input(placeholder="Answer your question"):
         response = get_dialogue(user_query)
@@ -99,10 +100,11 @@ def main():
         tts = Text2Speech(response.to_json())
         tts.get_part()
         tts.combine()
+        tts.post_processing('audios/dialogue.wav')
         st.rerun()
 
     if len(st.session_state.messages) > 0:
-        audio_file = open('audios/dialogue.wav', 'rb')
+        audio_file = open('audios/final_output.wav', 'rb')
         audio_bytes = audio_file.read()
         st.audio(audio_bytes, format='audio/wav')
 
