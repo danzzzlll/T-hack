@@ -78,14 +78,12 @@ def main():
     option = st.selectbox(
         "Выберете возвраст дочери? В зависимости от него будут отличаться зданные вопросы и голос",
         ("Вика - 10 лет", "Света - 14 лет", "Ника - 18 лет"),
-        index=None,
-        placeholder="Select contact method...",
     )
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
     if "file_processed" not in st.session_state:
-        st.session_state.file_processed = False  # Flag for processed files
+        st.session_state.file_processed = False
 
     uploaded_file = st.file_uploader("Загрузите файл PDF или TXT", type=["pdf", "txt"])
     for message in st.session_state.messages:

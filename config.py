@@ -24,5 +24,4 @@ class Config(BaseSettings):
 
 
 app_settings = Config()
-print(app_settings)
 
