@@ -1,7 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 from utils import load_and_extract_text
-from llm import get_dialogue
+from llm import get_dialogue, get_router_result
+from Prompts import PromptClass
 
 st.markdown(
     """
@@ -87,7 +88,7 @@ def main():
         file_text = load_and_extract_text(uploaded_file)
         response = get_dialogue(file_text).to_json()
         st.session_state.messages = response
-        st.session_state.file_processed = True  # Set file processed flag
+        st.session_state.file_processed = True
         tts = Text2Speech(response)
         tts.get_part()
         tts.combine()
@@ -95,13 +96,17 @@ def main():
         st.rerun()
 
     if user_query := st.chat_input(placeholder="Answer your question"):
-        response = get_dialogue(user_query)
-        st.session_state.messages = response.to_json()
-        tts = Text2Speech(response.to_json())
-        tts.get_part()
-        tts.combine()
-        tts.post_processing('audios/dialogue.wav')
-        st.rerun()
+        roter_result = get_router_result(user_query)
+        if roter_result == 0:
+            st.text(PromptClass.DEFAULT_ANSWER)
+        else:
+            response = get_dialogue(user_query)
+            st.session_state.messages = response.to_json()
+            tts = Text2Speech(response.to_json())
+            tts.get_part()
+            tts.combine()
+            tts.post_processing('audios/dialogue.wav')
+            st.rerun()
 
     if len(st.session_state.messages) > 0:
         audio_file = open('audios/final_output.wav', 'rb')
