@@ -72,7 +72,7 @@ def display_message(message, role):
 
 
 def main():
-    st.title("Диалог по статье Отца и Дочери")
+    st.title("Диалоги о Главном: Отец и Дочь")
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -85,6 +85,7 @@ def main():
         file_text = load_and_extract_text(uploaded_file)
         response = get_dialogue(file_text).to_json()
         st.session_state.messages = response
+        #TODO uploaded_file
         del uploaded_file
         # st.rerun()
 
