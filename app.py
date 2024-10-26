@@ -76,20 +76,22 @@ def main():
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
+    if "file_processed" not in st.session_state:
+        st.session_state.file_processed = False  # Flag for processed files
 
     uploaded_file = st.file_uploader("Загрузите файл PDF или TXT", type=["pdf", "txt"])
     for message in st.session_state.messages:
         display_message(message['phrase'], message['role'].value)
         
-    if uploaded_file:
+    if uploaded_file and not st.session_state.file_processed:
         file_text = load_and_extract_text(uploaded_file)
         response = get_dialogue(file_text).to_json()
         st.session_state.messages = response
+        st.session_state.file_processed = True  # Set file processed flag
         tts = Text2Speech(response)
         tts.get_part()
         tts.combine()
-        uploaded_file = None
-        st.rerun()
+        st.rerun()  
 
     if user_query := st.chat_input(placeholder="Answer your question"):
         response = get_dialogue(user_query)
