@@ -15,17 +15,34 @@ from config import app_settings
 
 class Text2Speech:
 
-    def __init__(self, dialogue):
+    def __init__(self, dialogue, age):
         
         self.dialogue = dialogue
-        self.voices = {
-            'father': app_settings.FATHER_NAME,
-            'daughter': app_settings.D_NAME
+        self.params = {
+            'father': {
+                'pitch': 1,
+                'voice': 'dorofeev',
+                'speed': 1
+            },
+            'daughter': {
+                10: {
+                    'pitch': 1.4,
+                    'voice': 'vika',
+                    'speed': 0.9
+                },
+                14:{
+                    'pitch': 1.3,
+                    'voice': 'sveta',
+                    'speed': 0.9
+                },
+                18:{
+                    'pitch': 1.2,
+                    'voice': 'nika',
+                    'speed': 1
+                }
+            }
         }
-        self.pitch = {
-            'father': app_settings.PITCH_FATHER,
-            'daughter': app_settings.PITCH_D
-        }
+        self.age = age
         self.sample_rate = 16000
         self.token = app_settings.SPEECH_KEY
         self.metadata = [("authorization", f"Bearer {self.token}")]
@@ -35,27 +52,39 @@ class Text2Speech:
         self.clean_folder()
     
     def get_part(self):
-        
-        for idx, part in tqdm(enumerate(self.dialogue)):
+
+        for idx, part in enumerate(self.dialogue):
+
+            if part['role'] == 'father':
+                pitch = self.params[part['role']]['pitch']
+                voice = self.params[part['role']]['voice']
+                speed = self.params[part['role']]['speed']
+            else:
+                pitch = self.params[part['role']][self.age]['pitch']
+                voice = self.params[part['role']][self.age]['voice']
+                speed = self.params[part['role']][self.age]['speed']
+            print(pitch, voice, speed)
             request = self.build_request(
-                self.voices[part['role']], 
-                self.pitch[part['role']], 
+                voice, 
+                pitch, 
+                speed,
                 part['phrase']
             )
             self.save(request, f"{self.audio_path}/part_{idx}_{part['role']}.wav")
 
         return
     
-    def build_request(self, role, pitch, text):
-         
+    def build_request(self, role, pitch, speed, text):
+
         stub = tts_pb2_grpc.TextToSpeechStub(grpc.secure_channel(self.endpoint, grpc.ssl_channel_credentials()))
         request = tts_pb2.SynthesizeSpeechRequest(
             input=tts_pb2.SynthesisInput(
-                text=text,
+                ssml=text
             ),
             audio_config=tts_pb2.AudioConfig(
                 audio_encoding=tts_pb2.LINEAR16,
                 sample_rate_hertz=self.sample_rate,
+                speaking_rate = speed,
                 pitch = pitch
             ),
             voice=tts_pb2.VoiceSelectionParams(
@@ -63,21 +92,9 @@ class Text2Speech:
             ),
         )
         response = stub.Synthesize(request, metadata=self.metadata)
+        
         return response
-    
-    def post_processing(self, dialogue):
-        print('start post processing')
-        dialogue = AudioSegment.from_file(dialogue)
-        background_noise1 = AudioSegment.from_file("data/background1.wav")
-        background_noise2 = AudioSegment.from_file("data/background2.wav")
-        background_noise3 = AudioSegment.from_file("data/background3.wav")
-        background_noises = [background_noise1, background_noise2, background_noise3]
-        background_noises = [noise - 12 for noise in background_noises]  
-        background_noise = random.choice(background_noises)
-        background_noise = background_noise[:len(dialogue)]
-        final_audio = dialogue.overlay(background_noise)
-        final_audio.export("audios/final_output.wav", format="wav")
-    
+
     def save(self, response, path):
         with wave.open(path, "wb") as f:
             f.setframerate(self.sample_rate)
@@ -106,6 +123,19 @@ class Text2Speech:
         output.close()
 
         return
+    
+    def post_processing(self, dialogue):
+        print('start post processing')
+        dialogue = AudioSegment.from_file(dialogue)
+        background_noise1 = AudioSegment.from_file("data/background1.wav")
+        background_noise2 = AudioSegment.from_file("data/background2.wav")
+        background_noise3 = AudioSegment.from_file("data/background3.wav")
+        background_noises = [background_noise1, background_noise2, background_noise3]
+        background_noises = [noise - 12 for noise in background_noises]  
+        background_noise = random.choice(background_noises)
+        background_noise = background_noise[:len(dialogue)]
+        final_audio = dialogue.overlay(background_noise)
+        final_audio.export("audios/final_output.wav", format="wav")
 
     def clean_folder(self):
         
@@ -116,5 +146,3 @@ class Text2Speech:
                 os.remove(file_path)
 
         return
-
-

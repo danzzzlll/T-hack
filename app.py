@@ -3,6 +3,7 @@ from openai import OpenAI
 from utils import load_and_extract_text
 from llm import get_dialogue, get_router_result
 from Prompts import PromptClass
+from speech import Text2Speech
 
 st.markdown(
     """
@@ -71,9 +72,15 @@ def display_message(message, role):
         unsafe_allow_html=True
     )
 
-from speech import Text2Speech
+
 def main():
     st.title("Диалоги о Главном: Отец и Дочь")
+    option = st.selectbox(
+        "Выберете возвраст дочери? В зависимости от него будут отличаться зданные вопросы и голос",
+        ("Вика - 10 лет", "Света - 14 лет", "Ника - 18 лет"),
+        index=None,
+        placeholder="Select contact method...",
+    )
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -89,7 +96,7 @@ def main():
         response = get_dialogue(file_text).to_json()
         st.session_state.messages = response
         st.session_state.file_processed = True
-        tts = Text2Speech(response)
+        tts = Text2Speech(response, age=int(option.split()[-2]))
         tts.get_part()
         tts.combine()
         tts.post_processing('audios/dialogue.wav')
@@ -100,9 +107,9 @@ def main():
         if roter_result == 0:
             st.text(PromptClass.DEFAULT_ANSWER)
         else:
-            response = get_dialogue(user_query)
-            st.session_state.messages = response.to_json()
-            tts = Text2Speech(response.to_json())
+            response = get_dialogue(user_query).to_json()
+            st.session_state.messages = response
+            tts = Text2Speech(response, age=int(option.split()[-2]))
             tts.get_part()
             tts.combine()
             tts.post_processing('audios/dialogue.wav')
