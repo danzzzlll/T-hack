@@ -14,7 +14,7 @@ from config import app_settings
 class Text2Speech:
 
     def __init__(self, dialogue):
-
+        
         self.dialogue = dialogue
         self.voices = {
             'father': app_settings.FATHER_NAME,
@@ -29,6 +29,8 @@ class Text2Speech:
         self.metadata = [("authorization", f"Bearer {self.token}")]
         self.endpoint = app_settings.SPEECH_ENDPOINT
         self.audio_path = 'audios/'
+
+        self.clean_folder()
     
     def get_part(self):
         
@@ -39,6 +41,8 @@ class Text2Speech:
                 part['phrase']
             )
             self.save(request, f"{self.audio_path}/part_{idx}_{part['role']}.wav")
+
+        return
     
     def build_request(self, role, pitch, text):
          
@@ -66,6 +70,8 @@ class Text2Speech:
             f.setsampwidth(2)
             f.writeframes(response.audio_content)
 
+        return
+
     def combine(self):
         
         files = list(filter(os.path.isfile, glob.glob(self.audio_path + "*.wav")))
@@ -83,4 +89,17 @@ class Text2Speech:
         for i in range(len(data)):
             output.writeframes(data[i][1])
         output.close()
+
+        return
+
+    def clean_folder(self):
+        
+        files = os.listdir(self.audio_path)
+        for file in files:
+            file_path = os.path.join(self.audio_path, file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+        return
+
 
