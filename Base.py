@@ -4,8 +4,8 @@ from enum import Enum
 import json
 
 class SpeakerRole(str, Enum):
-    father = "отец"
-    daughter = "дочь"
+    father = "Отец"
+    daughter = "Дочь"
 
 
 class DialogEntry(BaseModel):
@@ -18,5 +18,5 @@ class Dialog(BaseModel):
 
     def to_json(self):
         dialog = [{"role": entry.role, "phrase": entry.phrase} for entry in self.phrases]
-        dialog_json = json.dumps(dialog, ensure_ascii=False, indent=2)
-        return dialog_json
+        # dialog_json = json.dumps(dialog, ensure_ascii=False, indent=2)
+        return dialog
