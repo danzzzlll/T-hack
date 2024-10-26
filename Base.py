@@ -4,8 +4,8 @@ from enum import Enum
 import json
 
 class SpeakerRole(str, Enum):
-    father = "Отец"
-    daughter = "Дочь"
+    father = "father"
+    daughter = "daughter"
 
 
 class DialogEntry(BaseModel):

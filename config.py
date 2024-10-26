@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class Config(BaseSettings):
-    API_KEY: str = Field("sk-vfaXetQTUOUoffJ0H9oXhsRBdtfLRI5n")
+    API_KEY: str = Field("")
     MODEL: str = Field('gpt-4o-mini')
     API_BASE: str = Field('https://api.proxyapi.ru/openai/v1')
     YEARS: int = Field(16)
