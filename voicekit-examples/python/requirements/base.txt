@@ -1,0 +1,8 @@
+grpcio==1.45.0
+protobuf==3.19.4
+googleapis-common-protos==1.6.0
+httpx[http2]==0.22.0
+gcloud==0.18.3
+google-api-python-client
+gcloud==0.18.3
+google-api-python-client
