@@ -8,6 +8,8 @@ import os
 import wave
 from tqdm import tqdm
 import glob
+from pydub import AudioSegment
+import random
 
 from config import app_settings
 
@@ -62,7 +64,19 @@ class Text2Speech:
         )
         response = stub.Synthesize(request, metadata=self.metadata)
         return response
-
+    
+    def post_processing(self, dialogue):
+        # dialogue - прочитанный через AudioSegment wav file
+        background_noise1 = AudioSegment.from_file("background1.wav")
+        background_noise2 = AudioSegment.from_file("background2.wav")
+        background_noise3 = AudioSegment.from_file("background3.wav")
+        background_noises = [background_noise1, background_noise2, background_noise3]
+        background_noises = [noise - 12 for noise in background_noises]  
+        background_noise = random.choice(background_noises)
+        background_noise = background_noise[:len(dialogue)]
+        final_audio = dialogue.overlay(background_noise)
+        final_audio.export("final_output.wav", format="wav")
+    
     def save(self, response, path):
         with wave.open(path, "wb") as f:
             f.setframerate(self.sample_rate)
