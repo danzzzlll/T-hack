@@ -4,3 +4,4 @@ __pycache__
 .env
 env-git/
 __pycache__
+audios/*.wav
