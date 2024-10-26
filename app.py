@@ -70,7 +70,7 @@ def display_message(message, role):
         unsafe_allow_html=True
     )
 
-
+from speech import Text2Speech
 def main():
     st.title("Диалоги о Главном: Отец и Дочь")
 
@@ -85,14 +85,24 @@ def main():
         file_text = load_and_extract_text(uploaded_file)
         response = get_dialogue(file_text).to_json()
         st.session_state.messages = response
-        #TODO uploaded_file
-        del uploaded_file
-        # st.rerun()
+        tts = Text2Speech(response)
+        tts.get_part()
+        tts.combine()
+        uploaded_file = None
+        st.rerun()
 
     if user_query := st.chat_input(placeholder="Answer your question"):
         response = get_dialogue(user_query)
         st.session_state.messages = response.to_json()
+        tts = Text2Speech(response.to_json())
+        tts.get_part()
+        tts.combine()
         st.rerun()
+
+    if len(st.session_state.messages) > 0:
+        audio_file = open('audios/dialogue.wav', 'rb')
+        audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format='audio/wav')
 
         
 if __name__ == "__main__":

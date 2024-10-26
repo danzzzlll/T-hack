@@ -17,12 +17,12 @@ class Text2Speech:
 
         self.dialogue = dialogue
         self.voices = {
-            'отец': app_settings.FATHER_NAME,
-            'дочь': app_settings.D_NAME
+            'father': app_settings.FATHER_NAME,
+            'daughter': app_settings.D_NAME
         }
         self.pitch = {
-            'отец': app_settings.PITCH_FATHER,
-            'дочь': app_settings.PITCH_D
+            'father': app_settings.PITCH_FATHER,
+            'daughter': app_settings.PITCH_D
         }
         self.sample_rate = 16000
         self.token = app_settings.SPEECH_KEY
