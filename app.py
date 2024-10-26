@@ -34,7 +34,7 @@ st.markdown(
         border-top-right-radius: 0;
     }
     /* Assistant message alignment and background color */
-    .message-container.daughter {
+    .message-container.father {
         justify-content: flex-start; /* Align assistant messages to the left */
     }
     .message.father {
@@ -54,7 +54,7 @@ st.markdown(
 
 
 def display_message(message, role):
-    if role != "Дочь":
+    if role != "daughter":
         avatar_url = "https://png.pngtree.com/png-clipart/20230824/original/pngtree-smile-father-face-expression-picture-image_8446667.png"
     else:
         avatar_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5I45WuCMSz3Q2q0bHR28Fx5rSmMQdnCRcOw&s"
