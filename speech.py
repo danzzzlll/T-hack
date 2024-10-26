@@ -62,7 +62,7 @@ class Text2Speech:
         return response
     
     def post_processing(self, dialogue):
-
+        # dialogue - прочитанный через AudioSegment wav file
         background_noise1 = AudioSegment.from_file("background1.wav")
         background_noise2 = AudioSegment.from_file("background2.wav")
         background_noise3 = AudioSegment.from_file("background3.wav")
