@@ -20,3 +20,7 @@ class Dialog(BaseModel):
         dialog = [{"role": entry.role, "phrase": entry.phrase} for entry in self.phrases]
         # dialog_json = json.dumps(dialog, ensure_ascii=False, indent=2)
         return dialog
+    
+
+class RouteAnswer(BaseModel):
+    result: int = Field(..., description="0 или 1, относится запрос к тематике или нет 1- относится")

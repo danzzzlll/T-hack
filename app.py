@@ -1,7 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 from utils import load_and_extract_text
-from llm import get_dialogue
+from llm import get_dialogue, get_router_result
+from Prompts import PromptClass
 
 st.markdown(
     """
@@ -94,12 +95,16 @@ def main():
         st.rerun()  
 
     if user_query := st.chat_input(placeholder="Answer your question"):
-        response = get_dialogue(user_query)
-        st.session_state.messages = response.to_json()
-        tts = Text2Speech(response.to_json())
-        tts.get_part()
-        tts.combine()
-        st.rerun()
+        roter_result = get_router_result(user_query)
+        if roter_result == 0:
+            st.text(PromptClass.DEFAULT_ANSWER)
+        else:
+            response = get_dialogue(user_query)
+            st.session_state.messages = response.to_json()
+            tts = Text2Speech(response.to_json())
+            tts.get_part()
+            tts.combine()
+            st.rerun()
 
     if len(st.session_state.messages) > 0:
         audio_file = open('audios/dialogue.wav', 'rb')

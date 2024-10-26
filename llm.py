@@ -1,6 +1,6 @@
 from llama_index.llms.openai import OpenAI
 from config import app_settings
-from Base import Dialog
+from Base import Dialog, RouteAnswer
 from Prompts import PromptClass
 
 llm = OpenAI(model=app_settings.MODEL, api_key=app_settings.API_KEY, api_base=app_settings.API_BASE)
@@ -12,3 +12,11 @@ def get_dialogue(text):
         .raw
     )
     return restaurant_obj
+
+def get_router_result(text):
+    router_obj = (
+        llm.as_structured_llm(RouteAnswer)
+        .complete(PromptClass.ROUTER_PROMPT.format(query_str=text))
+        .raw
+    )
+    return router_obj.result
