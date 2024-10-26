@@ -2,3 +2,5 @@ env/
 envv2/
 __pycache__
 .env
+env-git/
+__pycache__
