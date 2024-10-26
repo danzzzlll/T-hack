@@ -93,14 +93,18 @@ def main():
         
     if uploaded_file and not st.session_state.file_processed:
         file_text = load_and_extract_text(uploaded_file)
-        response = get_dialogue(file_text).to_json()
-        st.session_state.messages = response
-        st.session_state.file_processed = True
-        tts = Text2Speech(response, age=int(option.split()[-2]))
-        tts.get_part()
-        tts.combine()
-        tts.post_processing('audios/dialogue.wav')
-        st.rerun()
+        roter_result = get_router_result(file_text)
+        if roter_result == 0:
+            st.text(PromptClass.DEFAULT_ANSWER)
+        else:
+            response = get_dialogue(file_text).to_json()
+            st.session_state.messages = response
+            st.session_state.file_processed = True
+            tts = Text2Speech(response, age=int(option.split()[-2]))
+            tts.get_part()
+            tts.combine()
+            tts.post_processing('audios/dialogue.wav')
+            st.rerun()
 
     if user_query := st.chat_input(placeholder="Answer your question"):
         roter_result = get_router_result(user_query)
