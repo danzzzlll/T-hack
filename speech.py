@@ -124,14 +124,14 @@ class Text2Speech:
 
         return
     
-    def post_processing(self, dialogue):
+    def post_processing(self, dialogue, noise_level=16):
         print('start post processing')
         dialogue = AudioSegment.from_file(dialogue)
         background_noise1 = AudioSegment.from_file("data/background1.wav")
         background_noise2 = AudioSegment.from_file("data/background2.wav")
         background_noise3 = AudioSegment.from_file("data/background3.wav")
         background_noises = [background_noise1, background_noise2, background_noise3]
-        background_noises = [noise - 12 for noise in background_noises]  
+        background_noises = [noise - noise_level for noise in background_noises]  
         background_noise = random.choice(background_noises)
         background_noise = background_noise[:len(dialogue)]
         final_audio = dialogue.overlay(background_noise)

@@ -75,10 +75,24 @@ def display_message(message, role):
 
 def main():
     st.title("Диалоги о Главном: Отец и Дочь")
-    option = st.selectbox(
-        "Выберете возвраст дочери? В зависимости от него будут отличаться зданные вопросы и голос",
+    option_age = st.selectbox(
+        "Выберете возвраст дочери **В зависимости от него будут отличаться заданные вопросы и голос**",
         ("Вика - 10 лет", "Света - 14 лет", "Ника - 18 лет"),
     )
+    noise_levels = ["Низкий", "Средний", "Высокий", "Очень высокий"]
+    selected_noise_range = st.select_slider(
+        "**Выберете уровень шума на фоне диалога**",
+        options=noise_levels,
+    )
+
+    if selected_noise_range == "Низкий":
+        noise_level = 16
+    elif selected_noise_range == "Средний":
+        noise_level = 12
+    elif selected_noise_range == "Высокий":
+        noise_level = 7
+    else:
+        noise_level = 3
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -98,10 +112,13 @@ def main():
             response = get_dialogue(file_text).to_json()
             st.session_state.messages = response
             st.session_state.file_processed = True
-            tts = Text2Speech(response, age=int(option.split()[-2]))
+            tts = Text2Speech(response, age=int(option_age.split()[-2]))
             tts.get_part()
             tts.combine()
-            tts.post_processing('audios/dialogue.wav')
+            tts.post_processing(
+                'audios/dialogue.wav',
+                noise_level=noise_level
+            )
             st.rerun()
 
     if user_query := st.chat_input(placeholder="Answer your question"):
@@ -111,10 +128,13 @@ def main():
         else:
             response = get_dialogue(user_query).to_json()
             st.session_state.messages = response
-            tts = Text2Speech(response, age=int(option.split()[-2]))
+            tts = Text2Speech(response, age=int(option_age.split()[-2]))
             tts.get_part()
             tts.combine()
-            tts.post_processing('audios/dialogue.wav')
+            tts.post_processing(
+                'audios/dialogue.wav',
+                noise_level
+            )
             st.rerun()
 
     if len(st.session_state.messages) > 0:
