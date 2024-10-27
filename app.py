@@ -107,26 +107,28 @@ def main():
         display_message(message['phrase'], message['role'].value)
         
     if uploaded_file and not st.session_state.file_processed:
-        file_text = load_and_extract_text(uploaded_file)
-        print(file_text)
-        roter_result = get_router_result(file_text)
+        user_query = load_and_extract_text(uploaded_file)
+        # print(type(user_query))
+        # print(user_query)
+        roter_result = get_router_result(user_query)
         if roter_result == 0:
             st.text(PromptClass.DEFAULT_ANSWER)
         else:
-            response = get_dialogue(file_text, n=int(option_age.split()[-2])).to_json()
+            response = get_dialogue(user_query, n=int(option_age.split()[-2])).to_json()
+            # print(response)
             st.session_state.messages = response
-            st.session_state.file_processed = True
             tts = Text2Speech(response, age=int(option_age.split()[-2]))
             tts.get_part()
             tts.combine()
             tts.post_processing(
                 'audios/dialogue.wav',
-                noise_level=noise_level
+                noise_level
             )
             st.rerun()
 
     if user_query := st.chat_input(placeholder="Answer your question"):
         roter_result = get_router_result(user_query)
+        print(user_query)
         if roter_result == 0:
             st.text(PromptClass.DEFAULT_ANSWER)
         else:
@@ -142,10 +144,10 @@ def main():
             )
             st.rerun()
 
-    # if len(st.session_state.messages) > 0:
-    #     audio_file = open('audios/final_output.wav', 'rb')
-    #     audio_bytes = audio_file.read()
-    #     st.audio(audio_bytes, format='audio/wav')
+    if len(st.session_state.messages) > 0:
+        audio_file = open('audios/final_output.wav', 'rb')
+        audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format='audio/wav')
 
         
 if __name__ == "__main__":
