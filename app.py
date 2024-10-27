@@ -5,6 +5,7 @@ from utils import load_and_extract_text
 from llm import get_dialogue, get_router_result
 from Prompts import PromptClass
 from speech import Text2Speech
+from config import app_settings
 
 st.markdown(
     """
@@ -107,11 +108,12 @@ def main():
         
     if uploaded_file and not st.session_state.file_processed:
         file_text = load_and_extract_text(uploaded_file)
+        print(file_text)
         roter_result = get_router_result(file_text)
         if roter_result == 0:
             st.text(PromptClass.DEFAULT_ANSWER)
         else:
-            response = get_dialogue(file_text).to_json()
+            response = get_dialogue(file_text, n=int(option_age.split()[-2])).to_json()
             st.session_state.messages = response
             st.session_state.file_processed = True
             tts = Text2Speech(response, age=int(option_age.split()[-2]))
@@ -128,7 +130,8 @@ def main():
         if roter_result == 0:
             st.text(PromptClass.DEFAULT_ANSWER)
         else:
-            response = get_dialogue(user_query).to_json()
+            response = get_dialogue(user_query, n=int(option_age.split()[-2])).to_json()
+            print(response)
             st.session_state.messages = response
             tts = Text2Speech(response, age=int(option_age.split()[-2]))
             tts.get_part()
@@ -139,10 +142,10 @@ def main():
             )
             st.rerun()
 
-    if len(st.session_state.messages) > 0:
-        audio_file = open('audios/final_output.wav', 'rb')
-        audio_bytes = audio_file.read()
-        st.audio(audio_bytes, format='audio/wav')
+    # if len(st.session_state.messages) > 0:
+    #     audio_file = open('audios/final_output.wav', 'rb')
+    #     audio_bytes = audio_file.read()
+    #     st.audio(audio_bytes, format='audio/wav')
 
         
 if __name__ == "__main__":
