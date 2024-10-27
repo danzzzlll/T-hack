@@ -65,6 +65,7 @@ def main():
     if user_query := st.chat_input(placeholder="Answer your question"):
         roter_result = get_router_result(user_query)
         print(user_query)
+        print(roter_result)
         if roter_result == 0:
             st.text(PromptClass.DEFAULT_ANSWER)
         else:

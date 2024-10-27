@@ -14,10 +14,9 @@ def get_dialogue(text, n):
     return restaurant_obj
 
 def get_router_result(text):
-    prompt = PromptClass.ROUTER_PROMPT.format(query_str=text)
     router_obj = (
         llm.as_structured_llm(RouteAnswer)
-        .complete(prompt)
+        .complete(PromptClass.ROUTER_PROMPT.format(query_str=text))
         .raw
     )
     return router_obj.result
