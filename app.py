@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from openai import OpenAI
 from utils import load_and_extract_text
@@ -74,6 +75,7 @@ def display_message(message, role):
 
 
 def main():
+    os.makedirs("audios", exist_ok=True)
     st.title("Диалоги о Главном: Отец и Дочь")
     option_age = st.selectbox(
         "Выберете возвраст дочери **В зависимости от него будут отличаться заданные вопросы и голос**",
